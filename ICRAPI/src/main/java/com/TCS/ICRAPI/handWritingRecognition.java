@@ -4,11 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -19,12 +20,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
-//import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
-//import com.TCS.ICRAPI.model.RequestBody;
-//import com.TCS.ICRAPI.model.azureAPIcall;
-
 
 @Path("/handWritingRecognition") 
 
@@ -34,25 +31,33 @@ public class handWritingRecognition
     @POST
 	@Path("/RecogniseImage")
     @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_ATOM_XML)
-    public static String imageDigitizer(RequestBody requestBody) 
+	@Produces(MediaType.APPLICATION_JSON)
+    public static imagesJson imageDigitizer(RequestBody requestBody)throws JSONException, IOException
     {
     	
     	StringBuilder result = new StringBuilder();
-        try 
-        {                        
+    	imagesJson imagesResponse = new imagesJson();
+    	
+    	
+    	JSONArray jsonResponse = new JSONArray();
+                               
         	
         	String imageFormat = requestBody.getImageFormat();
         	//result.append(imageFormat);
         	String[] images = requestBody.getImages();
+        	JSONObject jsonResultForEachImage;
         	
         	for(int i = 0; i < images.length; i++)
         	{        		        		
+        		jsonResultForEachImage = new JSONObject();
+        		//int imageNumber = i+1;
+        		//String keyName = "image"+imageNumber;
         		String in = images[i];
         		//result.append(in+"\n");
         		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(in);
         		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
         		File image = new File("image");
+        		
         		if(imageFormat.equalsIgnoreCase("png") || imageFormat.equalsIgnoreCase("jpeg") )
                 {
                 	ImageIO.write(img, imageFormat, image);
@@ -66,42 +71,68 @@ public class handWritingRecognition
                 if(size<= 1024*1024*4)
                 {
                 	FileEntity reqEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
-                    //azureAPIcall ob = new azureAPIcall();
-                    //String r = ob.main(reqEntity);
+                    
                     JSONObject j1 = azureAPIcall.main(reqEntity);
-                    //String r = j1.toString();
+                    
                     String status = j1.getString("status");
-                    //result.append(status);
-                    //JSONObject jsonResponse = new JSONObject();
+                    
                     if(status.equalsIgnoreCase("Succeeded"))
                     {
-                    	//JSONObject j1 = new JSONObject(j);
+                    	
                 		JSONObject j2 = j1.getJSONObject("recognitionResult");
                 		JSONArray lines = j2.getJSONArray("lines");
-                		//StringBuilder result = new StringBuilder();
+                		linesJson linesResponse = new linesJson();
+                		
                 		for (int k = 0; k < lines.length(); k++)
                 		{
-                			JSONObject im = lines.getJSONObject(k);
-                			String text = im.getString("text");
-                			result.append("\n"+text);
+                			JSONObject lineObject = lines.getJSONObject(k);
+                			lineObject.remove("boundingBox");
+                			String lineText = lineObject.getString("text");               			
+                			lineJson lineResponse=new lineJson();
+                			JSONArray word = lineObject.getJSONArray("words");
+                			lineResponse.text=lineText;
+                			
+                			for (int l = 0; l < word.length(); l++)
+                			{
+                				wordJson wordResponse = new wordJson();
+                				JSONObject wordObject = word.getJSONObject(l);
+                				wordObject.remove("boundingBox");
+                				String wordText = wordObject.getString("text");
+                				wordResponse.setText(wordText);
+                				//System.out.println(wordText);
+                				if(wordObject.has("confidence"))
+                				{
+                					wordResponse.setConfidence("low");
+                				}
+                				else
+                				{
+                					wordResponse.setConfidence("high");
+                				}
+                				lineResponse.words.add(wordResponse);
+                			}
+                			
+                			linesResponse.lines.add(lineResponse);
                 		}
-                		//return result;
-                    
+                		linesResponse.status = status;
+                		imagesResponse.images.add(linesResponse);
+                		jsonResultForEachImage = j2;
                     }
-                    //result.append(r);
+                    
+                    jsonResultForEachImage.put("status", status);
                 }
                 else 
                 {
-                	result.append("\nFile size is too large");                	                	
+                	jsonResultForEachImage.put("status", "File size is too large");                	                	
                 }
+                
+                jsonResponse.put(jsonResultForEachImage);
+                
         	}
-        	return result.toString();
-        } 
-        catch (Exception e) 
-        {
-        	String s3 = e.getMessage()+"	here";
-        	return s3;
-        }
+        	
+        	
+         
+        
+        return imagesResponse;
     }
     @POST
     @Path("/RecognisePdf")

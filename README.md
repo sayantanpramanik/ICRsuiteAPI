@@ -9,7 +9,11 @@ Structure of JSON request:
   
   "imageFormat": "//format of the images",
   
-  "images": ["//base64 of image1", "//base64 of image2", //as many as required]
+  "images": 
+            [
+              "//base64 of image1", 
+              "//base64 of image2", //as many as required          
+            ]
 
 }
 

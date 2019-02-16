@@ -11,8 +11,11 @@ Structure of JSON request:
   
   "images": 
             [
+              
               "//base64 of image1", 
+              
               "//base64 of image2", //as many as required          
+            
             ]
 
 }

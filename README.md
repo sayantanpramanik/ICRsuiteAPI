@@ -21,6 +21,7 @@ Structure of JSON request:
 }
 
 Example of JSON response for 2 images:
+
 {
     
     "images": 

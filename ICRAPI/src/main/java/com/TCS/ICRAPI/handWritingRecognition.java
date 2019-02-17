@@ -33,56 +33,43 @@ public class handWritingRecognition
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     public static imagesJson imageDigitizer(RequestBody requestBody)throws JSONException, IOException
-    {
-    	
-    	StringBuilder result = new StringBuilder();
-    	imagesJson imagesResponse = new imagesJson();
-    	
-    	
-    	JSONArray jsonResponse = new JSONArray();
-                               
-        	
-        	String imageFormat = requestBody.getImageFormat();
-        	//result.append(imageFormat);
-        	String[] images = requestBody.getImages();
-        	JSONObject jsonResultForEachImage;
+    {    	
+    	imagesJson imagesResponse = new imagesJson(); 
+    	linesJson linesResponse = new linesJson();
+    	JSONArray jsonResponse = new JSONArray();                                      	
+        String imageFormat = requestBody.getImageFormat();        	
+        String[] images = requestBody.getImages();
+        JSONObject jsonResultForEachImage;
         	
         	for(int i = 0; i < images.length; i++)
         	{        		        		
         		jsonResultForEachImage = new JSONObject();
-        		//int imageNumber = i+1;
-        		//String keyName = "image"+imageNumber;
         		String in = images[i];
-        		//result.append(in+"\n");
         		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(in);
         		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
         		File image = new File("image");
-        		
+        		String status = "";
         		if(imageFormat.equalsIgnoreCase("png") || imageFormat.equalsIgnoreCase("jpeg") )
                 {
                 	ImageIO.write(img, imageFormat, image);
                 }
                 else
                 {
-                	result.append("\nUnsupported Image Format");
+                	status = "Unsupported Image Format";
                 	
                 }
         		long size = image.length();
                 if(size<= 1024*1024*4)
                 {
-                	FileEntity reqEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);
-                    
-                    JSONObject j1 = azureAPIcall.main(reqEntity);
-                    
-                    String status = j1.getString("status");
+                	FileEntity reqEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);                    
+                    JSONObject j1 = azureAPIcall.main(reqEntity);                   
+                    status = j1.getString("status");     
                     
                     if(status.equalsIgnoreCase("Succeeded"))
-                    {
-                    	
+                    {                    	
                 		JSONObject j2 = j1.getJSONObject("recognitionResult");
                 		JSONArray lines = j2.getJSONArray("lines");
-                		linesJson linesResponse = new linesJson();
-                		
+                		                		
                 		for (int k = 0; k < lines.length(); k++)
                 		{
                 			JSONObject lineObject = lines.getJSONObject(k);
@@ -90,8 +77,7 @@ public class handWritingRecognition
                 			String lineText = lineObject.getString("text");               			
                 			lineJson lineResponse=new lineJson();
                 			JSONArray word = lineObject.getJSONArray("words");
-                			lineResponse.text=lineText;
-                			
+                			lineResponse.text=lineText;                			
                 			for (int l = 0; l < word.length(); l++)
                 			{
                 				wordJson wordResponse = new wordJson();
@@ -109,12 +95,11 @@ public class handWritingRecognition
                 					wordResponse.setConfidence("high");
                 				}
                 				lineResponse.words.add(wordResponse);
-                			}
-                			
+                			}               			
                 			linesResponse.lines.add(lineResponse);
                 		}
-                		linesResponse.status = status;
-                		imagesResponse.images.add(linesResponse);
+                		
+                		
                 		jsonResultForEachImage = j2;
                     }
                     
@@ -122,18 +107,15 @@ public class handWritingRecognition
                 }
                 else 
                 {
-                	jsonResultForEachImage.put("status", "File size is too large");                	                	
+                	status = "File size is too large";                	                	
                 }
-                
-                jsonResponse.put(jsonResultForEachImage);
-                
-        	}
-        	
-        	
-         
-        
+                linesResponse.status = status;
+                imagesResponse.images.add(linesResponse);
+                jsonResponse.put(jsonResultForEachImage);                
+        	}        	        	                 
         return imagesResponse;
     }
+    
     @POST
     @Path("/RecognisePdf")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -171,13 +153,12 @@ public class handWritingRecognition
         	return s3;
     	}
     }
+    
     @GET
     @Path("Recognise")
     @Produces(MediaType.APPLICATION_ATOM_XML)
     public String check()
     {
     	return "Fine";
-    }
-    
-    
+    }    
 }

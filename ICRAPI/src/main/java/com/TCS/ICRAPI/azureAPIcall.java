@@ -76,7 +76,7 @@ public class azureAPIcall
                 System.out.println("\nError retrieving Operation-Location.\nExiting.");
                 System.exit(1);
             }            
-            Thread.sleep(10000);
+            Thread.sleep(11000);
             // Call the second REST API method and get the response.
             HttpGet resultRequest = new HttpGet(operationLocation);
             resultRequest.setHeader("Ocp-Apim-Subscription-Key", subscriptionKey);

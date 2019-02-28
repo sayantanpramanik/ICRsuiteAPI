@@ -72,7 +72,7 @@ public class dummyForm
 		        			JSONObject lineObject = lines.getJSONObject(k);
 		        			lineObject.remove("boundingBox");
 		        			String lineText = lineObject.getString("text");
-		        			String text = "", confidence = "high", newText = "";
+		        			String text = "", confidence = "high";
 		        			int isThere = searchSubstring.isSubstring(fieldTags[x],lineText);
 		        			if(isThere!=-1)
 		        			{
@@ -106,7 +106,7 @@ public class dummyForm
 		        				{
 		        					JSONObject lineObject2 = lines.getJSONObject(m);
 		        					String lineText2 = lineObject2.getString("text");
-		        					text = text+lineText2+"";
+		        					text = text+" "+lineText2;
 		        					JSONArray word = lineObject.getJSONArray("words");
 		        					for (int n = 0; n < word.length(); n++)
 		        					{
@@ -118,10 +118,26 @@ public class dummyForm
 		                				}
 		        					}
 		        					int isAt = searchSubstring.isSubstring(fieldTags[x], text);
-		        					newText = cleanText.clean(text.substring(isAt));
+		        					if(isAt > -1)
+		        					{
+		        						//text = cleanText.clean(text.substring(isAt));
+		        						text = text.substring(isAt);
+		        					}
 		        				}
 		        				f.key = fields[x];
-		        				f.value = newText;
+		        				if(fields[x].equalsIgnoreCase("GENDER :"))
+		        				{
+		        					text = GetGender.main(text);
+		        				}
+		        				if(fields[x].equalsIgnoreCase("MARRITAL STATUS :"))
+		        				{
+		        					text = GetMaritalStatus.main(text);
+		        				}
+		        				if(fields[x].equalsIgnoreCase("FIRST NAME :") || fields[x].equalsIgnoreCase("LAST NAME :") || fields[x].equalsIgnoreCase("DOB :") || fields[x].equalsIgnoreCase("AGE :"))
+		        				{
+		        					text = cleanText.removeSpaces(text);
+		        				}
+		        				f.value = cleanText.removeUnderScore(text);
 		        				f.confidence = confidence;
 		        				response.dummyLines.add(f);
 		        			}

@@ -2,8 +2,8 @@ package com.TCS.ICRAPI;
 
 public class dummyFormFields 
 {
-	static String fields[] = {"LAST NAME","FIRST NAME", "ADDRESS", "DOB", "EMAIL ID"};
-	static String[] fieldTags = {"LAST NAME","FIRST NAME", "ADDRESS", "OB", "EMAIL ID"};	
+	static String fields[] = {"FIRST NAME :","LAST NAME :", "DOB :", "AGE :", "ADDRESS :", "CONTACT NO :", "EMAIL ID :", "MARRITAL STATUS :", "GENDER :", "SIGNATURE:"};
+	static String[] fieldTags = {"FIRST NAME :","LAST NAME :", "DOB :", "AGE :", "ADDRESS :", "CONTACT NO :", "EMAIL ID :", "MARRITAL STATUS :", "GENDER :", "SIGNATURE:"};	
 	public dummyFormFields()
 	{
 		

@@ -8,6 +8,7 @@ public class GetMaritalStatus
 		int[] x = new int[3];
 		String[] statusOptions = {"SINGLE", "MARRIED", "DIVORCED"};
 		String str = "";
+		int n = 0;
 		for (int i = 0; i < statusOptions.length; i++)
 		{
 			x[i] = isSubstring1(statusOptions[i], s);
@@ -24,7 +25,7 @@ public class GetMaritalStatus
 			for(int j = 0; j < str.length(); j++)
 			{
 				char ch = str.charAt(j);
-				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0')
+				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0' || ch == '@')
 				{
 					flag = false;
 				}
@@ -32,11 +33,17 @@ public class GetMaritalStatus
 			if(flag == true)
 			{
 				maritalStatus = statusOptions[i];
-				break;
+				n++;
 			}
 		}
-		//System.out.println("\n");
-		return maritalStatus;
+		if(n == 1)
+		{
+			return maritalStatus;
+		}
+		else 
+		{
+			return "Marital Status Not Detected Properly";
+		}
 	}
 	static int isSubstring1(String s1, String s2) 
     { 

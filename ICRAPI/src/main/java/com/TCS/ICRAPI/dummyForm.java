@@ -106,7 +106,7 @@ public class dummyForm
 		        				{
 		        					JSONObject lineObject2 = lines.getJSONObject(m);
 		        					String lineText2 = lineObject2.getString("text");
-		        					text = text+" "+lineText2;
+		        					text = text+" _"+lineText2;
 		        					JSONArray word = lineObject.getJSONArray("words");
 		        					for (int n = 0; n < word.length(); n++)
 		        					{
@@ -125,19 +125,72 @@ public class dummyForm
 		        					}
 		        				}
 		        				f.key = fields[x];
+		        				if(fields[x].equalsIgnoreCase("FIRST NAME :") || fields[x].equalsIgnoreCase("LAST NAME :"))
+		        				{
+		        					text = cleanField.cleanNameField(text);
+		        				}
+		        				if(fields[x].equalsIgnoreCase("CONTACT NO :"))
+		        				{
+		        					text = cleanField.cleanContactNumberField(text);
+		        					if(text.equalsIgnoreCase("Invalid Contact Number"))
+		        					{
+		        						message = message+"\n"+text;
+		        					}
+		        					else
+		        					{
+		        						confidence = "high";
+		        					}
+		        				}
+		        				if(fields[x].equalsIgnoreCase("AGE :"))
+		        				{
+		        					text = cleanField.cleanAge(text);
+		        					if(text.equalsIgnoreCase("Invalid Age"))
+		        					{
+		        						message = message+"\n"+text;
+		        					}
+		        				}
 		        				if(fields[x].equalsIgnoreCase("GENDER :"))
 		        				{
 		        					text = GetGender.main(text);
+		        					if(text.equalsIgnoreCase("Gender Not Detected Properly"))
+		        					{
+		        						message = message+"\n"+text;
+		        					}
+		        					else
+		        					{
+		        						confidence = "high";
+		        					}
 		        				}
 		        				if(fields[x].equalsIgnoreCase("MARRITAL STATUS :"))
 		        				{
 		        					text = GetMaritalStatus.main(text);
+		        					if(text.equalsIgnoreCase("Marital Status Not Detected Properly"))
+		        					{
+		        						message = message+"\n"+text;
+		        					}
+		        					else
+		        					{
+		        						confidence = "high";
+		        					}
 		        				}
-		        				if(fields[x].equalsIgnoreCase("FIRST NAME :") || fields[x].equalsIgnoreCase("LAST NAME :") || fields[x].equalsIgnoreCase("DOB :") || fields[x].equalsIgnoreCase("AGE :"))
+		        				if(fields[x].equalsIgnoreCase("DOB :"))
 		        				{
-		        					text = cleanText.removeSpaces(text);
+		        					text = cleanField.cleanDOB(text);
+		        					if (text.equalsIgnoreCase("Invalid Date"))
+		        					{
+		        						message = message+"\n"+text;
+		        					}
+		        					else
+		        					{
+		        						confidence = "high";
+		        					}
+		        					//text = cleanText.removeSpaces(text);
 		        				}
-		        				f.value = cleanText.removeUnderScore(text);
+		        				if(fields[x].equalsIgnoreCase("ADDRESS :"))
+		        				{
+		        					text = cleanField.cleanAddress(text);
+		        				}
+		        				f.value = text;
 		        				f.confidence = confidence;
 		        				response.dummyLines.add(f);
 		        			}

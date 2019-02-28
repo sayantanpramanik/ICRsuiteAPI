@@ -8,6 +8,7 @@ public class GetGender
 		int[] x = new int[3];
 		String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
 		String str = "";
+		int n = 0;
 		for (int i = 0; i < genderOptions.length; i++)
 		{
 			x[i] = isSubstring1(genderOptions[i], s);
@@ -24,7 +25,7 @@ public class GetGender
 			for(int j = 0; j < str.length(); j++)
 			{
 				char ch = str.charAt(j);
-				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0')
+				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0' || ch == '@')
 				{
 					flag = false;
 				}
@@ -32,11 +33,17 @@ public class GetGender
 			if(flag == true)
 			{
 				gender = genderOptions[i];
-				break;
+				n++;
 			}
 		}
-		//System.out.println("\n");
-		return gender;
+		if(n == 1)
+		{
+			return gender;
+		}
+		else 
+		{
+			return "Gender Not Detected Properly";
+		}
 	}
 	static int isSubstring1(String s1, String s2) 
     { 

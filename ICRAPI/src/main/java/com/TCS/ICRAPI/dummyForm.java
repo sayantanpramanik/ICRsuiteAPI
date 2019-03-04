@@ -3,6 +3,7 @@ package com.TCS.ICRAPI;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.json.JSONArray;
@@ -30,6 +32,7 @@ public class dummyForm
 		dummyImageResponse response = new dummyImageResponse();
 		String status = "", message = ""; int maxImageMB = 4;
 		int x = 0;
+		int[] signCoordinates = new int[8];
         String fields[] = new String[1];
         String[] fieldTags = new String[1];
         String formType = DummyRequest.formType;
@@ -42,11 +45,7 @@ public class dummyForm
 		String in = DummyRequest.images[0];
 		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(in);
 		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
-		//final ClassLoader loader = dummyForm.class.getClassLoader();
-		//String path = System.getProperty("java.io.tmpdir");
-		//String path = new File(".").getCanonicalPath()+"\"+""+"image";
 		File image = new File("image");
-		//System.out.println(path);
 		if(imageFormat.equalsIgnoreCase("png") || imageFormat.equalsIgnoreCase("jpeg") || imageFormat.equalsIgnoreCase("jpg"))
 		{
 			ImageIO.write(img, imageFormat, image);
@@ -56,9 +55,7 @@ public class dummyForm
 				FileEntity reqEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);                    
 		        JSONObject j1 = azureAPIcall.main(reqEntity);
 		        status = j1.getString("status");
-		        //response.dummyStatus = status;
-		        
-		       
+		   
 		        if(status.equalsIgnoreCase("Succeeded"))
 		        {
 		        	JSONObject j2 = j1.getJSONObject("recognitionResult");
@@ -70,7 +67,7 @@ public class dummyForm
 		    			for (int k = 0; k < lines.length(); k++)
 		        		{
 		        			JSONObject lineObject = lines.getJSONObject(k);
-		        			lineObject.remove("boundingBox");
+		        			//lineObject.remove("boundingBox");
 		        			String lineText = lineObject.getString("text");
 		        			String text = "", confidence = "high";
 		        			int isThere = searchSubstring.isSubstring(fieldTags[x],lineText);
@@ -88,7 +85,7 @@ public class dummyForm
 		        					for (int l = (k+1); l < lines.length(); l++)
 		            				{
 		            					JSONObject lineObject1 = lines.getJSONObject(l);
-		            					lineObject1.remove("boundingBox");
+		            					//lineObject1.remove("boundingBox");
 		            	    			String lineText1 = lineObject1.getString("text");
 		            	    			int isThere1 = searchSubstring.isSubstring(fieldTags[x+1],lineText1);
 		            	    			if(isThere1!=-1)
@@ -189,6 +186,26 @@ public class dummyForm
 		        				if(fields[x].equalsIgnoreCase("ADDRESS :"))
 		        				{
 		        					text = cleanField.cleanAddress(text);
+		        					text.trim();
+		        				}
+		        				if(fields[x].equalsIgnoreCase("SIGNATURE:"))
+		        				{
+		        					JSONArray coor = (lines.getJSONObject(lines.length()-1)).getJSONArray("boundingBox");
+		        					text = "";
+		        					for (int n = 0; n < 8; n++)
+		        					{
+		        						signCoordinates[n] = coor.getInt(n);
+		        						//text = text+" "+signCoordinates[n];
+		        					}
+		        					BufferedImage newImg = img.getSubimage(signCoordinates[0], signCoordinates[1], (signCoordinates[2]-signCoordinates[0]), (signCoordinates[5]-signCoordinates[1]));
+		        					File of = new File ("image1");
+		        					ImageIO.write(newImg, "png", of);
+		        					FileInputStream fileInputStreamReader = new FileInputStream(of);
+		        					byte[] bytes = new byte[(int)of.length()];
+		        					fileInputStreamReader.read(bytes);
+		        					String encodedfile = new String(Base64.encodeBase64(bytes), "UTF-8");
+		        					text = encodedfile;
+		        					fileInputStreamReader.close();
 		        				}
 		        				f.value = text;
 		        				f.confidence = confidence;

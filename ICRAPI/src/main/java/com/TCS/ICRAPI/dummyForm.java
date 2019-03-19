@@ -308,6 +308,16 @@ public class dummyForm
 			        				{
 			        					text=cleanField.cleanZipCodeField(text);
 			        				}
+			        				if(fields[w][x].equalsIgnoreCase("EMAIL ID:"))
+			        				{
+			        					text = cleanText.removeSpaces(text);
+			        					boolean isValid = cleanField.validateEmail(text);
+			        					if(isValid == false)
+			        					{
+			        						confidence = "low";
+			        						message = message+"\n"+"Invalid Email ID";
+			        					}
+			        				}
 			        				f.value = text;
 			        				
 			        				f.confidence = confidence;

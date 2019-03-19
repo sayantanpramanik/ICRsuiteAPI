@@ -49,6 +49,33 @@ public class cleanField
 		}
 		*/
 	}
+	public static boolean validateEmail (String s)
+	{
+		int p = s.lastIndexOf("@");
+		if(p == 0)
+		{
+			return false;
+		}
+		int l = s.length();
+		int p1 = 0;
+		for(int i = p+1; i < l; i++)
+		{
+			if(s.charAt(i) == '.')
+			{
+				p1 = i;
+				break;
+			}
+		}
+		if((p1-1) == p)
+		{
+			return false;
+		}
+		if((p1+1) == l)
+		{
+			return false;
+		}
+		return true;
+	}
 	public static String cleanAge(String s)
 	{
 		s = cleanText.removeSpaces(s);

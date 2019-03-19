@@ -1,17 +1,17 @@
 package com.TCS.ICRAPI;
 
-public class GetGender 
+public class GetEnjoymentStatus 
 {
 	public static String main(String s)
 	{
-		String gender = "";
-		int[] x = new int[3];
-		String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
+		String status = "";
+		int[] x = new int[2];
+		String[] statusOptions = {"Yes", "No"};
 		String str = "";
 		int n = 0;
-		for (int i = 0; i < genderOptions.length; i++)
+		for (int i = 0; i < statusOptions.length; i++)
 		{
-			x[i] = isSubstring1(genderOptions[i], s);
+			x[i] = isSubstring1(statusOptions[i], s);
 			if(i == 0)
 			{
 				str = s.substring(0,x[i]);
@@ -32,17 +32,17 @@ public class GetGender
 			}
 			if(flag == true)
 			{
-				gender = genderOptions[i];
+				status = statusOptions[i];
 				n++;
 			}
 		}
 		if(n == 1)
 		{
-			return gender;
+			return status;
 		}
 		else 
 		{
-			return "Gender Not Detected Properly";
+			return "Enjoyment Status Not Detected Properly";
 		}
 	}
 	static int isSubstring1(String s1, String s2) 

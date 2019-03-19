@@ -25,7 +25,7 @@ public class GetMaritalStatus
 			for(int j = 0; j < str.length(); j++)
 			{
 				char ch = str.charAt(j);
-				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0' || ch == '@')
+				if(ch == 'O' || ch == 'Q' || ch == 'o' || ch == '0')
 				{
 					flag = false;
 				}

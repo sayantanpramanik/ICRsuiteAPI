@@ -8,6 +8,18 @@ public class cleanField
 		s = removeUnwantedCharacters(s);
 		return s;
 	}
+	public static String cleanCityField(String s)
+	{
+		s = cleanText.removeSpaces(s);
+		s = removeUnwantedCharacters(s);
+		return s;
+	}
+	public static String cleanStateField(String s)
+	{
+		s = cleanText.removeSpaces(s);
+		s = removeUnwantedCharacters(s);
+		return s;
+	}
 	public static String cleanContactNumberField(String s)
 	{
 		s = cleanText.removeSpaces(s);
@@ -21,6 +33,21 @@ public class cleanField
 			return "Invalid Contact Number";
 		}
 		
+	}
+	public static String cleanZipCodeField(String s)
+	{
+		s = cleanText.removeSpaces(s);
+		s = removeUnwantedCharacters1(s);
+		return s;
+		/*if(s.length()==10 || s.length()==11)
+		{
+			return s;
+		}
+		else
+		{
+			return "Invalid Contact Number";
+		}
+		*/
 	}
 	public static String cleanAge(String s)
 	{

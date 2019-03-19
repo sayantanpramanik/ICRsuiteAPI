@@ -41,8 +41,18 @@ public class dummyForm
         	fields = dummyFormFields.fields;
             fieldTags = dummyFormFields.fieldTags;
         }
+        if(formType.equalsIgnoreCase("Feedback"))
+        {
+        	fields = FeedbackFormFields.fields;
+            fieldTags = FeedbackFormFields.fieldTags;
+        }
+        if(formType.equalsIgnoreCase("Registration"))
+        {
+        	fields = RegistrationFormFields.fields;
+            fieldTags = RegistrationFormFields.fieldTags;
+        }
 		String imageFormat = DummyRequest.imageFormat;
-		while(w < fields.length)
+		while(w < DummyRequest.images.length)
 		{
 			x = 0;
 			String in = DummyRequest.images[w];
@@ -58,7 +68,7 @@ public class dummyForm
 					FileEntity reqEntity = new FileEntity(image, ContentType.APPLICATION_OCTET_STREAM);                    
 			        JSONObject j1 = azureAPIcall.main(reqEntity);
 			        status = j1.getString("status");
-			   
+			    
 			        if(status.equalsIgnoreCase("Succeeded"))
 			        {
 			        	JSONObject j2 = j1.getJSONObject("recognitionResult");
@@ -66,19 +76,20 @@ public class dummyForm
 			    		//System.out.println(j2.toString());
 			    		while(x <= fields[w].length-1)
 			    		{
-			    			
+			    			//System.out.println(fields[w][x]);
 			    			for (int k = 0; k < lines.length(); k++)
 			        		{
 			        			JSONObject lineObject = lines.getJSONObject(k);
 			        			//lineObject.remove("boundingBox");
 			        			String lineText = lineObject.getString("text");
+			        			//System.out.println(lineText);
 			        			String text = "", confidence = "high";
 			        			int isThere = searchSubstring.isSubstring(fieldTags[w][x],lineText);
 			        			if(isThere!=-1)
 			        			{
 			        				fieldsJson f = new fieldsJson();
 			        				int y = 0;
-			        				
+			        				//System.out.println(fields[w][x]);
 			        				if (x == fields[w].length-1)
 			        				{
 			        					y = lines.length();
@@ -127,11 +138,11 @@ public class dummyForm
 			        				}
 			        				f.key = fields[w][x];
 			        				
-			        				if(fields[w][x].equalsIgnoreCase("FIRST NAME :") || fields[w][x].equalsIgnoreCase("LAST NAME :"))
+			        				if(fields[w][x].equalsIgnoreCase("FIRST NAME :") || fields[w][x].equalsIgnoreCase("LAST NAME :") || fields[w][x].equalsIgnoreCase("First Name:") || fields[w][x].equalsIgnoreCase("Last Name:"))
 			        				{
 			        					text = cleanField.cleanNameField(text);
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("CONTACT NO :"))
+			        				if(fields[w][x].equalsIgnoreCase("CONTACT NO :") || fields[w][x].equalsIgnoreCase("CONTACT NO:") || fields[w][x].equalsIgnoreCase("Phone No:"))
 			        				{
 			        					text = cleanField.cleanContactNumberField(text);
 			        					if(text.equalsIgnoreCase("Invalid Contact Number"))
@@ -143,7 +154,7 @@ public class dummyForm
 			        						confidence = "high";
 			        					}
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("AGE :"))
+			        				if(fields[w][x].equalsIgnoreCase("AGE :") || fields[w][x].equalsIgnoreCase("AGE:"))
 			        				{
 			        					text = cleanField.cleanAge(text);
 			        					if(text.equalsIgnoreCase("Invalid Age"))
@@ -151,36 +162,41 @@ public class dummyForm
 			        						message = message+"\n"+text;
 			        					}
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("GENDER :"))
+			        				if(fields[w][x].equalsIgnoreCase("GENDER :") || fields[w][x].equalsIgnoreCase("GENDER:"))
 			        				{
+			        					//System.out.println(text);
 			        					text = GetGender.main(text);
 			        					if(text.equalsIgnoreCase("Gender Not Detected Properly"))
 			        					{
 			        						message = message+"\n"+text;
+			        						confidence = "low";
 			        					}
 			        					else
 			        					{
 			        						confidence = "high";
 			        					}
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("MARRITAL STATUS :"))
+			        				if(fields[w][x].equalsIgnoreCase("MARRITAL STATUS :") || fields[w][x].equalsIgnoreCase("MARRITAL STATUS:"))
 			        				{
+			        					//System.out.println(text);
 			        					text = GetMaritalStatus.main(text);
 			        					if(text.equalsIgnoreCase("Marital Status Not Detected Properly"))
 			        					{
 			        						message = message+"\n"+text;
+			        						confidence = "low";
 			        					}
 			        					else
 			        					{
 			        						confidence = "high";
 			        					}
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("DOB :"))
+			        				if(fields[w][x].equalsIgnoreCase("DOB :") || fields[w][x].equalsIgnoreCase("DOB:"))
 			        				{
 			        					text = cleanField.cleanDOB(text);
 			        					if (text.equalsIgnoreCase("Invalid Date"))
 			        					{
 			        						message = message+"\n"+text;
+			        						confidence = "low";
 			        					}
 			        					else
 			        					{
@@ -188,7 +204,7 @@ public class dummyForm
 			        					}
 			        					//text = cleanText.removeSpaces(text);
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("ADDRESS :"))
+			        				if(fields[w][x].equalsIgnoreCase("ADDRESS :") || fields[w][x].equalsIgnoreCase("ADDRESS:"))
 			        				{
 			        					text = cleanField.cleanAddress(text);
 			        					text.trim();
@@ -218,6 +234,7 @@ public class dummyForm
 			        					if(text.equalsIgnoreCase("Claim Type Not Detected Properly"))
 			        					{
 			        						message = message+"\n"+text;
+			        						confidence = "low";
 			        					}
 			        					else
 			        					{
@@ -230,11 +247,66 @@ public class dummyForm
 			        					if(text.equalsIgnoreCase("Health Condition Not Detected Properly"))
 			        					{
 			        						message = message+"\n"+text;
+			        						confidence = "low";
 			        					}
 			        					else
 			        					{
 			        						confidence = "high";
 			        					}
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("Are you enjoying your visit at TCS Hyderabad so far?"))
+			        				{
+			        					text = GetEnjoymentStatus.main(text);
+			        					if(text.equalsIgnoreCase("Enjoyment Status Not Detected Properly"))
+			        					{
+			        						message = message+"\n"+text;
+			        						confidence = "low";
+			        					}
+			        					else
+			        					{
+			        						confidence = "high";
+			        					}
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("How satisfied were you with your visit so far?"))
+			        				{
+			        					text = GetSatisfactionStatus.main(text);
+			        					if(text.equalsIgnoreCase("Satisfaction Level Not Detected Properly"))
+			        					{
+			        						message = message+"\n"+text;
+			        						confidence = "low";
+			        					}
+			        					else
+			        					{
+			        						confidence = "high";
+			        					}
+			        				}
+			        				
+			        				
+			        				if(fields[w][x].equalsIgnoreCase("CONNECT VIA:"))
+			        				{
+			        					text = GetConnectVia.main(text);
+			        					if (text.equalsIgnoreCase("Contacting Options Not Detected Properly"))
+			        					{
+			        						message = message+"\n"+text;
+			        						confidence = "low";
+			        					}
+			        					else
+			        					{
+			        						confidence = "high";
+			        					}
+			        					//text = cleanText.removeSpaces(text);
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("STATE:"))
+			        				{
+			        					text=cleanField.cleanStateField(text);
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("CITY:") || fields[w][x].equalsIgnoreCase("City:"))
+			        				{
+			        					text=cleanField.cleanCityField(text);
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("Zip code:") || fields[w][x].equalsIgnoreCase("ZIPCODE:"))
+			        				{
+			        					text=cleanField.cleanZipCodeField(text);
 			        				}
 			        				f.value = text;
 			        				

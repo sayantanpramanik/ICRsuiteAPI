@@ -1,17 +1,17 @@
 package com.TCS.ICRAPI;
 
-public class GetGender 
+public class GetConnectVia 
 {
 	public static String main(String s)
 	{
-		String gender = "";
+		String connect = "";
 		int[] x = new int[3];
-		String[] genderOptions = {"MALE", "FEMALE", "OTHER"};
+		String[] connectOptions = {"CALL", "EMAIL", "SMS"};
 		String str = "";
 		int n = 0;
-		for (int i = 0; i < genderOptions.length; i++)
+		for (int i = 0; i < connectOptions.length; i++)
 		{
-			x[i] = isSubstring1(genderOptions[i], s);
+			x[i] = isSubstring1(connectOptions[i], s);
 			if(i == 0)
 			{
 				str = s.substring(0,x[i]);
@@ -32,17 +32,17 @@ public class GetGender
 			}
 			if(flag == true)
 			{
-				gender = genderOptions[i];
+				connect = connectOptions[i]+","+connect;
 				n++;
 			}
 		}
-		if(n == 1)
+		if(n <= 3)
 		{
-			return gender;
+			return connect;
 		}
 		else 
 		{
-			return "Gender Not Detected Properly";
+			return "Contacting Options Not Detected Properly";
 		}
 	}
 	static int isSubstring1(String s1, String s2) 

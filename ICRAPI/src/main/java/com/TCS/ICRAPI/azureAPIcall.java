@@ -31,7 +31,7 @@ public class azureAPIcall
         	URIBuilder builder = new URIBuilder(uriBase);
 
             // Request parameter.
-            builder.setParameter("mode", "Handwritten");
+            builder.setParameter("mode", "Printed");
 
             // Prepare the URI for the REST API method.
             URI uri = builder.build();

@@ -23,22 +23,7 @@ public class cleanField
 	public static String cleanContactNumberField(String s)
 	{
 		s = cleanText.removeSpaces(s);
-		s = removeUnwantedCharacters1(s);
-		if(s.length()==10 || s.length()==11)
-		{
-			return s;
-		}
-		else
-		{
-			return "Invalid Contact Number";
-		}
-		
-	}
-	public static String cleanZipCodeField(String s)
-	{
-		s = cleanText.removeSpaces(s);
-		s = removeUnwantedCharacters1(s);
-		return s;
+		s = removeUnwantedCharacters2(s);
 		/*if(s.length()==10 || s.length()==11)
 		{
 			return s;
@@ -46,8 +31,21 @@ public class cleanField
 		else
 		{
 			return "Invalid Contact Number";
-		}
-		*/
+		}*/
+		return s;
+		
+	}
+	public static String cleanZipCodeField(String s)
+	{
+		s = cleanText.removeSpaces(s);
+		s = removeUnwantedCharacters2(s);
+		return s;
+	}
+	public static String cleanRatingField(String s)
+	{
+		s = cleanText.removeSpaces(s);
+		s = removeUnwantedCharacters2(s);
+		return s;
 	}
 	public static boolean validateEmail (String s)
 	{
@@ -66,6 +64,10 @@ public class cleanField
 				break;
 			}
 		}
+		if(p == 0 || p1 == 0)
+        {
+            return false;
+        }
 		if((p1-1) == p)
 		{
 			return false;

@@ -61,4 +61,18 @@ public class cleanText
 		}
 		return false;
 	}
+	public static String allowValidCharacters(String s)
+	{
+		String s1 = "";
+		for(int i = 0; i < s.length(); i++)
+		{
+			char ch = s.charAt(i);
+			int c = (int)ch;
+			if(c <= 126)
+			{
+				s1 = s1+""+ch;
+			}
+		}
+		return s1;
+	}
 }

@@ -1,12 +1,14 @@
 package com.TCS.ICRAPI;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.json.stream.JsonParsingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,7 +29,7 @@ public class dummyForm
 	@Path("/dummyImage")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public static dummyImageResponse main(dummyRequest DummyRequest) throws IOException, JSONException
+	public static dummyImageResponse main(dummyRequest DummyRequest) throws IOException, JSONException, JsonParsingException
 	{
 		dummyImageResponse response = new dummyImageResponse();
 		String status = "", message = ""; int maxImageMB = 4;
@@ -58,6 +60,8 @@ public class dummyForm
 			String in = DummyRequest.images[w];
 			byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(in);
 			BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
+			RescaleOp rescaleOp = new RescaleOp(1.25f, 35, null);
+			rescaleOp.filter(img, img);  // Source and destination are the same.
 			File image = new File("image");
 			if(imageFormat.equalsIgnoreCase("png") || imageFormat.equalsIgnoreCase("jpeg") || imageFormat.equalsIgnoreCase("jpg"))
 			{
@@ -138,6 +142,19 @@ public class dummyForm
 			        				}
 			        				f.key = fields[w][x];
 			        				
+			        				if(text.equals(""))
+			        				{
+			        					message = message+"\n"+fields[w][x]+" Not Detected Properly";
+			        				}
+			        				/*if(fields[w][x].equalsIgnoreCase("Rating:"))
+			        				{
+			        					System.out.println("Rating: "+text);
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("Phone No:"))
+			        				{
+			        					System.out.println("Phone No: "+text);
+			        				}*/
+			        				text = cleanText.allowValidCharacters(text);
 			        				if(fields[w][x].equalsIgnoreCase("FIRST NAME :") || fields[w][x].equalsIgnoreCase("LAST NAME :") || fields[w][x].equalsIgnoreCase("First Name:") || fields[w][x].equalsIgnoreCase("Last Name:"))
 			        				{
 			        					text = cleanField.cleanNameField(text);
@@ -308,7 +325,7 @@ public class dummyForm
 			        				{
 			        					text=cleanField.cleanZipCodeField(text);
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("EMAIL ID:"))
+			        				if(fields[w][x].equalsIgnoreCase("EMAIL ID:") || fields[w][x].equalsIgnoreCase("EMAIL ID :"))
 			        				{
 			        					text = cleanText.removeSpaces(text);
 			        					boolean isValid = cleanField.validateEmail(text);
@@ -318,8 +335,11 @@ public class dummyForm
 			        						message = message+"\n"+"Invalid Email ID";
 			        					}
 			        				}
-			        				f.value = text;
-			        				
+			        				if(fields[w][x].equalsIgnoreCase("Rating:"))
+			        				{
+			        					text=cleanField.cleanRatingField(text);
+			        				}
+			        				f.value = text;	
 			        				f.confidence = confidence;
 			        				response.dummyLines.add(f);
 			        			}

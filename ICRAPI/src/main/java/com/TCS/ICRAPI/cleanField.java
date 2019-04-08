@@ -4,7 +4,11 @@ public class cleanField
 {
 	public static String cleanNameField(String s)
 	{
-		s = cleanText.removeSpaces(s);
+		//s = cleanText.removeSpaces(s);
+		while(s.charAt(0) == ' ')
+        {
+            s = s.substring(1);
+        }
 		s = removeUnwantedCharacters(s);
 		return s;
 	}
@@ -46,6 +50,26 @@ public class cleanField
 		s = cleanText.removeSpaces(s);
 		s = removeUnwantedCharacters2(s);
 		return s;
+	}
+	public static String cleanEmailField(String s)
+	{
+		try
+		{
+			while(s.charAt(0) == ' ')
+	        {
+	            s = s.substring(1);
+	        }
+			s = cleanText.removeSpaces(s);
+			if(s.charAt(0) == '_')
+			{
+				s = s.substring(1);
+			}
+			return s;
+		}
+		catch(Exception e)
+		{
+			return "";
+		}
 	}
 	public static boolean validateEmail (String s)
 	{
@@ -121,7 +145,11 @@ public class cleanField
 	}
 	public static String cleanAddress(String s)
 	{
-		s = cleanText.removeSpaces(s);
+		while(s.charAt(0) == ' ')
+        {
+            s = s.substring(1);
+        }
+		//s = cleanText.removeSpaces(s);
 		String str = "";
 		for (int i = 0; i < s.length(); i++)
 		{
@@ -136,10 +164,52 @@ public class cleanField
 			}
 			else
 			{
+				if(ch >= 'a' && ch <= 'z')
+                {
+                    ch-=32;
+                }
 				str = str+ch;
 			}
 		}
 		str.trim();
+		return str;
+	}
+	public static String cleanSuggestionsField(String s)
+	{
+		s = s+" ";
+		if(s.charAt(0) == ' ')
+		{
+			s = s.substring(1);
+		}
+		String str = "";
+		String word = "";
+		for(int i = 0; i < s.length(); i++)
+		{
+			char ch = s.charAt(i);
+			if (ch == ' ')
+			{
+				if(word.charAt(0) == '_')
+				{
+					if(str.length() == 0)
+					{
+					    str = str+word.substring(1);
+					}
+					else
+					{
+					    str = str+" "+word.substring(1);
+					}
+				}
+				word = "";
+			}
+			else
+			{
+				if(ch >= 'a' && ch <= 'z')
+                {
+                    ch-=32;
+                }
+				word = word+ch;
+			}
+		}
 		return str;
 	}
 	public static String removeUnwantedCharacters(String s)
@@ -153,6 +223,11 @@ public class cleanField
 				str = str+ch;
 			}
 			if(ch >= 'a' && ch <= 'z')
+			{
+				ch -= 32;
+				str = str+ch;
+			}
+			if(ch == ' ')
 			{
 				str = str+ch;
 			}
@@ -171,6 +246,7 @@ public class cleanField
 			}
 			if(ch >= 'a' && ch <= 'z')
 			{
+				ch -= 32;
 				str = str+ch;
 			}
 			if(ch >= '0' && ch <= '9')

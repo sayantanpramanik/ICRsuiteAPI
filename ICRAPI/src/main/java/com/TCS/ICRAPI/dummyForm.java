@@ -141,11 +141,7 @@ public class dummyForm
 			        					}
 			        				}
 			        				f.key = fields[w][x];
-			        				
-			        				if(text.equals(""))
-			        				{
-			        					message = message+"\n"+fields[w][x]+" Not Detected Properly";
-			        				}
+			        								
 			        				/*if(fields[w][x].equalsIgnoreCase("Rating:"))
 			        				{
 			        					System.out.println("Rating: "+text);
@@ -157,6 +153,7 @@ public class dummyForm
 			        				text = cleanText.allowValidCharacters(text);
 			        				if(fields[w][x].equalsIgnoreCase("FIRST NAME :") || fields[w][x].equalsIgnoreCase("LAST NAME :") || fields[w][x].equalsIgnoreCase("First Name:") || fields[w][x].equalsIgnoreCase("Last Name:"))
 			        				{
+			        					//System.out.println(text);
 			        					text = cleanField.cleanNameField(text);
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("CONTACT NO :") || fields[w][x].equalsIgnoreCase("CONTACT NO:") || fields[w][x].equalsIgnoreCase("Phone No:"))
@@ -207,7 +204,7 @@ public class dummyForm
 			        						confidence = "high";
 			        					}
 			        				}
-			        				if(fields[w][x].equalsIgnoreCase("DOB :") || fields[w][x].equalsIgnoreCase("DOB:"))
+			        				if(fields[w][x].equalsIgnoreCase("DOB :") || fields[w][x].equalsIgnoreCase("DOB:") || fields[w][x].equalsIgnoreCase("DOB(DD-MM-YYYY):"))
 			        				{
 			        					text = cleanField.cleanDOB(text);
 			        					if (text.equalsIgnoreCase("Invalid Date"))
@@ -223,8 +220,11 @@ public class dummyForm
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("ADDRESS :") || fields[w][x].equalsIgnoreCase("ADDRESS:"))
 			        				{
-			        					text = cleanField.cleanAddress(text);
-			        					text.trim();
+			        					if(text.length()>0)
+			        					{
+			        						text = cleanField.cleanAddress(text);
+				        					//text.trim(); 
+			        					}
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("SIGNATURE:"))
 			        				{
@@ -327,17 +327,30 @@ public class dummyForm
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("EMAIL ID:") || fields[w][x].equalsIgnoreCase("EMAIL ID :"))
 			        				{
-			        					text = cleanText.removeSpaces(text);
-			        					boolean isValid = cleanField.validateEmail(text);
-			        					if(isValid == false)
+			        					//text = cleanText.removeSpaces(text);
+			        					text = cleanField.cleanEmailField(text);
+			        					if(text.length()>0)
 			        					{
-			        						confidence = "low";
-			        						message = message+"\n"+"Invalid Email ID";
+			        						boolean isValid = cleanField.validateEmail(text);
+				        					if(isValid == false)
+				        					{
+				        						confidence = "low";
+				        						message = message+"\n"+"Invalid Email ID";
+				        					}
 			        					}
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("Rating:"))
 			        				{
 			        					text=cleanField.cleanRatingField(text);
+			        				}
+			        				if(fields[w][x].equalsIgnoreCase("Suggestions:"))
+			        				{
+			        					//System.out.println(text);
+			        					text=cleanField.cleanSuggestionsField(text);
+			        				}
+			        				if(text.equals(""))
+			        				{
+			        					message = message+"\n"+fields[w][x].substring(0, fields[w][x].length()-1)+" Not Detected Properly";
 			        				}
 			        				f.value = text;	
 			        				f.confidence = confidence;

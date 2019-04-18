@@ -38,6 +38,7 @@ public class dummyForm
         String fields[][] = new String[1][1];
         String[][] fieldTags = new String[1][1];
         String formType = DummyRequest.formType;
+        /*
         if(formType.equalsIgnoreCase("dummyForm"))
         {
         	fields = dummyFormFields.fields;
@@ -53,6 +54,9 @@ public class dummyForm
         	fields = RegistrationFormFields.fields;
             fieldTags = RegistrationFormFields.fieldTags;
         }
+        */
+        fields[0] = GetFormData.getFields(formType, "fields");
+        fieldTags[0] = GetFormData.getFields(formType, "fieldtags");
 		String imageFormat = DummyRequest.imageFormat;
 		while(w < DummyRequest.images.length)
 		{

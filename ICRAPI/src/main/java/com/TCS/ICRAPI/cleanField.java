@@ -4,7 +4,7 @@ public class cleanField
 {
 	public static String cleanNameField(String s)
 	{
-		//s = cleanText.removeSpaces(s);
+		s = cleanText.removeSpaces(s);
 		while(s.charAt(0) == ' ')
         {
             s = s.substring(1);
@@ -292,9 +292,9 @@ public class cleanField
 		{
 			days[3] = 29;
 		}
-		if (dd > 0 && dd <= days[mm])
+		if (dd < 10)
 		{
-			date = date+dd+"/";
+			date = date+"0"+dd+"/";
 		}
 		else
 		{

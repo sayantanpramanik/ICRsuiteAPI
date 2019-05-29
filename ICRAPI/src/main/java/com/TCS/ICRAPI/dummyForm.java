@@ -81,7 +81,9 @@ public class dummyForm
 			        {
 			        	JSONObject j2 = j1.getJSONObject("recognitionResult");
 			    		JSONArray lines = j2.getJSONArray("lines");
-			    		//System.out.println(j2.toString());
+
+			    		
+			    		
 			    		while(x <= fields[w].length-1)
 			    		{
 			    			//System.out.println(fields[w][x]);
@@ -210,6 +212,7 @@ public class dummyForm
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("DOB :") || fields[w][x].equalsIgnoreCase("DOB:") || fields[w][x].equalsIgnoreCase("DOB(DD-MM-YYYY):"))
 			        				{
+			        					//System.out.println(text);
 			        					text = cleanField.cleanDOB(text);
 			        					if (text.equalsIgnoreCase("Invalid Date"))
 			        					{
@@ -323,10 +326,12 @@ public class dummyForm
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("CITY:") || fields[w][x].equalsIgnoreCase("City:"))
 			        				{
+			        					//System.out.println(text);
 			        					text=cleanField.cleanCityField(text);
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("Zip code:") || fields[w][x].equalsIgnoreCase("ZIPCODE:"))
 			        				{
+			        					//System.out.println(text);
 			        					text=cleanField.cleanZipCodeField(text);
 			        				}
 			        				if(fields[w][x].equalsIgnoreCase("EMAIL ID:") || fields[w][x].equalsIgnoreCase("EMAIL ID :"))
